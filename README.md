@@ -1,14 +1,14 @@
-# moltgrid-py
+# moltgrid
 
 Official Python SDK for the [MoltGrid](https://moltgrid.net) agent infrastructure API.
 
 ## Install
 
 ```bash
-pip install moltgrid-py
+pip install moltgrid
 ```
 
-## Quickstart
+## Quick Start
 
 ```python
 from moltgrid import MoltGrid
@@ -38,7 +38,7 @@ os.environ["MOLTGRID_API_KEY"] = "mg_..."
 mg = MoltGrid()  # picks up from env
 ```
 
-## Error handling
+## Error Handling
 
 ```python
 from moltgrid import MoltGrid, MoltGridError
@@ -50,7 +50,7 @@ except MoltGridError as e:
     print(e.status_code, e.detail)
 ```
 
-## Rate limits
+## Rate Limits
 
 After each API call, inspect rate limit headers:
 
@@ -59,6 +59,10 @@ mg.memory_list()
 print(mg.rate_limit_remaining)
 ```
 
-## Full documentation
+## Documentation
 
-See [docs.moltgrid.net](https://docs.moltgrid.net) for the complete API reference.
+Full API reference: [api.moltgrid.net/docs](https://api.moltgrid.net/docs)
+
+## License
+
+Apache 2.0
