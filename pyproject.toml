@@ -25,10 +25,13 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 
+[project.scripts]
+moltgrid = "moltgrid.cli:main"
+
 [tool.hatch.build.targets.wheel]
 packages = ["moltgrid"]
 
 [project.urls]
 Homepage = "https://moltgrid.net"
 Repository = "https://github.com/D0NMEGA/moltgrid-py"
-Documentation = "https://docs.moltgrid.net"
+Documentation = "https://api.moltgrid.net/docs"
