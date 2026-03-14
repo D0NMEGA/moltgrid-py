@@ -23,28 +23,8 @@ GREEN = "\033[92m"
 YELLOW = "\033[93m"
 WHITE = "\033[97m"
 
-# 3D isometric lattice cube — matches the MoltGrid logo
-CUBE_LINES = [
-    r"         o-------o        ",
-    r"        /|      /|        ",
-    r"       o-+-----o |        ",
-    r"      /| |    /| |        ",
-    r"     o-+-o---o-+-o        ",
-    r"     | |/    | |/         ",
-    r"     | o-----+-o          ",
-    r"     |/      |/           ",
-    r"     o-------o            ",
-]
-
-CUBE_SMALL = [
-    r"    o---o   ",
-    r"   /|  /|   ",
-    r"  o-+-o |   ",
-    r"  | o-+-o   ",
-    r"  |/  |/    ",
-    r"  o---o     ",
-]
-
+# Hexagonal wireframe lattice — matches the MoltGrid logo
+# The logo is an isometric hex with internal cross-bracing and node dots
 
 def _banner():
     R = RED + BOLD
@@ -52,12 +32,16 @@ def _banner():
     D = DIM
     lines = [
         f"",
-        f"  {R}    o---o{E}",
-        f"  {R}   /|  /|{E}",
-        f"  {R}  o-+-o |{E}   {R}MoltGrid{E}  {D}v{__version__}{E}",
-        f"  {R}  | o-+-o{E}   {D}infrastructure for autonomous agents{E}",
-        f"  {R}  |/  |/{E}",
-        f"  {R}  o---o{E}",
+        f"  {R}        /\\{E}",
+        f"  {R}       /  \\{E}",
+        f"  {R}      /\\ /\\{E}",
+        f"  {R}     / \\X/ \\{E}    {R}MoltGrid{E}  {D}v{__version__}{E}",
+        f"  {R}    / /\\X/\\ \\{E}   {D}infrastructure for autonomous agents{E}",
+        f"  {R}    \\ \\/X\\/ /{E}",
+        f"  {R}     \\ /X\\ /{E}",
+        f"  {R}      \\/ \\/{E}",
+        f"  {R}       \\  /{E}",
+        f"  {R}        \\/{E}",
         f"",
     ]
     return "\n".join(lines)
@@ -69,15 +53,22 @@ def _banner_large():
     D = DIM
     lines = [
         f"",
-        f"  {R}       o-------o{E}",
-        f"  {R}      /|      /|{E}",
-        f"  {R}     o-+-----o |{E}",
-        f"  {R}    /| |    /| |{E}    {R}M o l t G r i d{E}",
-        f"  {R}   o-+-o---o-+-o{E}",
-        f"  {R}   | |/    | |/{E}     {D}v{__version__}  |  api.moltgrid.net  |  Apache 2.0{E}",
-        f"  {R}   | o-----+-o{E}      {D}infrastructure for autonomous agents{E}",
-        f"  {R}   |/      |/{E}",
-        f"  {R}   o-------o{E}",
+        f"  {R}            /\\{E}",
+        f"  {R}           /  \\{E}",
+        f"  {R}          / /\\ \\{E}",
+        f"  {R}         / /  \\ \\{E}",
+        f"  {R}        / / /\\ \\ \\{E}",
+        f"  {R}       / / /  \\ \\ \\{E}       {R}MoltGrid{E}",
+        f"  {R}      /\\ \\/ /\\ \\/ /\\{E}",
+        f"  {R}     /  \\ \\/ /\\ \\/ /  \\{E}    {D}v{__version__}  |  api.moltgrid.net  |  Apache 2.0{E}",
+        f"  {R}     \\  / /\\ \\/ /\\ \\  /{E}    {D}infrastructure for autonomous agents{E}",
+        f"  {R}      \\/ / /\\ \\/ /\\ \\/{E}",
+        f"  {R}       \\ \\ \\  / / /{E}",
+        f"  {R}        \\ \\ \\/ / /{E}",
+        f"  {R}         \\ \\  / /{E}",
+        f"  {R}          \\ \\/ /{E}",
+        f"  {R}           \\  /{E}",
+        f"  {R}            \\/{E}",
         f"",
     ]
     return "\n".join(lines)
@@ -157,12 +148,16 @@ def cmd_health(args):
         E = RESET
         D = DIM
         print()
-        print(f"  {R}    o---o{E}")
-        print(f"  {R}   /|  /|{E}")
-        print(f"  {R}  o-+-o |{E}   {R}MoltGrid{E}  {color}{status}{E}")
-        print(f"  {R}  | o-+-o{E}   {D}v{version}{E}")
-        print(f"  {R}  |/  |/{E}")
-        print(f"  {R}  o---o{E}")
+        print(f"  {R}      /\\{E}")
+        print(f"  {R}     /  \\{E}")
+        print(f"  {R}    /\\ /\\{E}")
+        print(f"  {R}   / \\X/ \\{E}    {R}MoltGrid{E}  {color}{status}{E}")
+        print(f"  {R}  / /\\X/\\ \\{E}   {D}v{version}{E}")
+        print(f"  {R}  \\ \\/X\\/ /{E}")
+        print(f"  {R}   \\ /X\\ /{E}")
+        print(f"  {R}    \\/ \\/{E}")
+        print(f"  {R}     \\  /{E}")
+        print(f"  {R}      \\/{E}")
         print()
         uptime = data.get("uptime_pct")
         if uptime:
@@ -338,12 +333,14 @@ def main():
         description="MoltGrid CLI — infrastructure for autonomous agents",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=f"""{DIM}
-    o---o
-   /|  /|   api.moltgrid.net
-  o-+-o |   pip install moltgrid
-  | o-+-o
-  |/  |/
-  o---o
+      /\\
+     /  \\      api.moltgrid.net
+    /\\ /\\     pip install moltgrid
+   / \\X/ \\
+   \\ /X\\ /
+    \\/ \\/
+     \\  /
+      \\/
 {RESET}""",
     )
     parser.add_argument("--version", action="version", version=f"moltgrid {__version__}")
