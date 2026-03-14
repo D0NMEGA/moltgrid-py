@@ -14,22 +14,6 @@ from .exceptions import MoltGridError
 
 # ── Grid lattice branding ─────────────────────────────────────────────────────
 
-GRID = r"""
-    +---+---+---+---+
-    |   |   |   |   |
-    +---+---+---+---+
-    |   | M O L T   |
-    +---+---+---+---+
-    |   | G R I D   |
-    +---+---+---+---+
-    |   |   |   |   |
-    +---+---+---+---+
-"""
-
-BANNER_SMALL = r"""  +--+--+--+
-  |  MOLT  |
-  +--GRID--+"""
-
 RED = "\033[91m"
 DIM = "\033[2m"
 BOLD = "\033[1m"
@@ -39,26 +23,63 @@ GREEN = "\033[92m"
 YELLOW = "\033[93m"
 WHITE = "\033[97m"
 
+# 3D isometric lattice cube — matches the MoltGrid logo
+CUBE_LINES = [
+    r"         o-------o        ",
+    r"        /|      /|        ",
+    r"       o-+-----o |        ",
+    r"      /| |    /| |        ",
+    r"     o-+-o---o-+-o        ",
+    r"     | |/    | |/         ",
+    r"     | o-----+-o          ",
+    r"     |/      |/           ",
+    r"     o-------o            ",
+]
+
+CUBE_SMALL = [
+    r"    o---o   ",
+    r"   /|  /|   ",
+    r"  o-+-o |   ",
+    r"  | o-+-o   ",
+    r"  |/  |/    ",
+    r"  o---o     ",
+]
+
 
 def _banner():
+    R = RED + BOLD
+    E = RESET
+    D = DIM
     lines = [
-        f"{RED}{BOLD}  +--+--+--+{RESET}",
-        f"{RED}{BOLD}  |  MOLT  |{RESET}  {DIM}v{__version__}{RESET}",
-        f"{RED}{BOLD}  +--GRID--+{RESET}  {DIM}infrastructure for autonomous agents{RESET}",
+        f"",
+        f"  {R}    o---o{E}",
+        f"  {R}   /|  /|{E}",
+        f"  {R}  o-+-o |{E}   {R}MoltGrid{E}  {D}v{__version__}{E}",
+        f"  {R}  | o-+-o{E}   {D}infrastructure for autonomous agents{E}",
+        f"  {R}  |/  |/{E}",
+        f"  {R}  o---o{E}",
+        f"",
     ]
     return "\n".join(lines)
 
 
-def _lattice(rows=3, cols=6):
-    """Generate a small lattice pattern."""
-    lines = []
-    for r in range(rows):
-        top = DIM + "+".join(["---"] * (cols + 1)) + RESET
-        mid = DIM + "|".join(["   "] * (cols + 1)) + RESET
-        lines.append(top)
-        if r < rows - 1:
-            lines.append(mid)
-    lines.append(DIM + "+".join(["---"] * (cols + 1)) + RESET)
+def _banner_large():
+    R = RED + BOLD
+    E = RESET
+    D = DIM
+    lines = [
+        f"",
+        f"  {R}       o-------o{E}",
+        f"  {R}      /|      /|{E}",
+        f"  {R}     o-+-----o |{E}",
+        f"  {R}    /| |    /| |{E}    {R}M o l t G r i d{E}",
+        f"  {R}   o-+-o---o-+-o{E}",
+        f"  {R}   | |/    | |/{E}     {D}v{__version__}  |  api.moltgrid.net  |  Apache 2.0{E}",
+        f"  {R}   | o-----+-o{E}      {D}infrastructure for autonomous agents{E}",
+        f"  {R}   |/      |/{E}",
+        f"  {R}   o-------o{E}",
+        f"",
+    ]
     return "\n".join(lines)
 
 
@@ -132,9 +153,16 @@ def cmd_health(args):
         status = data.get("status", "unknown")
         version = data.get("version", "?")
         color = GREEN if status == "operational" else RED
-        print(f"\n  {RED}{BOLD}+--+--+--+{RESET}")
-        print(f"  {RED}{BOLD}|  MOLT  |{RESET}  {color}{status}{RESET}")
-        print(f"  {RED}{BOLD}+--GRID--+{RESET}  {DIM}v{version}{RESET}")
+        R = RED + BOLD
+        E = RESET
+        D = DIM
+        print()
+        print(f"  {R}    o---o{E}")
+        print(f"  {R}   /|  /|{E}")
+        print(f"  {R}  o-+-o |{E}   {R}MoltGrid{E}  {color}{status}{E}")
+        print(f"  {R}  | o-+-o{E}   {D}v{version}{E}")
+        print(f"  {R}  |/  |/{E}")
+        print(f"  {R}  o---o{E}")
         print()
         uptime = data.get("uptime_pct")
         if uptime:
@@ -299,21 +327,7 @@ def cmd_directory(args):
 
 def cmd_grid(args):
     """Display the MoltGrid lattice."""
-    print()
-    print(f"{RED}{BOLD}")
-    print("  +-----+-----+-----+-----+-----+-----+")
-    print("  |     |     |     |     |     |     |")
-    print("  +-----+-----+-----+-----+-----+-----+")
-    print("  |     |  M  |  O  |  L  |  T  |     |")
-    print("  +-----+-----+-----+-----+-----+-----+")
-    print("  |     |  G  |  R  |  I  |  D  |     |")
-    print("  +-----+-----+-----+-----+-----+-----+")
-    print("  |     |     |     |     |     |     |")
-    print("  +-----+-----+-----+-----+-----+-----+")
-    print(f"{RESET}")
-    print(f"  {DIM}v{__version__} | api.moltgrid.net | Apache 2.0{RESET}")
-    print(f"  {DIM}Infrastructure for autonomous agents{RESET}")
-    print()
+    print(_banner_large())
 
 
 # ── Main ──────────────────────────────────────────────────────────────────────
@@ -324,9 +338,12 @@ def main():
         description="MoltGrid CLI — infrastructure for autonomous agents",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=f"""{DIM}
-  +--+--+--+
-  |  MOLT  |  api.moltgrid.net
-  +--GRID--+  pip install moltgrid
+    o---o
+   /|  /|   api.moltgrid.net
+  o-+-o |   pip install moltgrid
+  | o-+-o
+  |/  |/
+  o---o
 {RESET}""",
     )
     parser.add_argument("--version", action="version", version=f"moltgrid {__version__}")
