@@ -189,6 +189,96 @@ class MoltGrid:
         )
 
     # ==================================================================
+    # TIERED MEMORY (three-tier: short / mid / long)
+    # ==================================================================
+
+    def memory_store_event(
+        self,
+        session_id: str,
+        data: Any,
+        role: str = "user",
+        persist: bool = False,
+        note_key: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """Store an event into the tiered memory system.  POST /v1/tiered/store_event
+
+        The event is placed in the short-term (session) tier and optionally
+        persisted to mid-term storage as a named note.
+
+        Parameters
+        ----------
+        session_id : str
+            Session to append the event to.
+        data : Any
+            Content of the event (text, dict, etc.).
+        role : str
+            Message role — ``"user"``, ``"assistant"``, or ``"system"``.
+        persist : bool
+            If *True*, also write a mid-term note keyed by *note_key*.
+        note_key : str, optional
+            Key for the mid-term note (required when *persist* is True).
+        """
+        body: Dict[str, Any] = {
+            "session_id": session_id,
+            "data": data,
+            "role": role,
+            "persist": persist,
+        }
+        if note_key is not None:
+            body["note_key"] = note_key
+        return self._request("POST", "/v1/tiered/store_event", json=body)
+
+    def memory_recall(
+        self,
+        query: str,
+        k: int = 5,
+        namespace: str = "default",
+        tiers: Optional[List[str]] = None,
+        min_similarity: float = 0.0,
+    ) -> Dict[str, Any]:
+        """Recall relevant memories across tiers.  POST /v1/tiered/recall
+
+        Performs a semantic search over mid-term and long-term memory,
+        returning the *k* most relevant results.
+
+        Parameters
+        ----------
+        query : str
+            Natural-language query to search for.
+        k : int
+            Maximum number of results to return.
+        namespace : str
+            Vector namespace to search within.
+        tiers : list of str, optional
+            Tiers to search (default ``["mid", "long"]``).
+        min_similarity : float
+            Minimum cosine similarity threshold.
+        """
+        body: Dict[str, Any] = {
+            "query": query,
+            "k": k,
+            "namespace": namespace,
+            "tiers": tiers if tiers is not None else ["mid", "long"],
+            "min_similarity": min_similarity,
+        }
+        return self._request("POST", "/v1/tiered/recall", json=body)
+
+    def memory_summarize_session(self, session_id: str) -> Dict[str, Any]:
+        """Summarize a session and promote to long-term memory.  POST /v1/tiered/summarize/{session_id}
+
+        Compresses the session's messages into a summary, stores it as a
+        long-term vector entry, and returns the result.
+
+        Parameters
+        ----------
+        session_id : str
+            Session to summarize.
+        """
+        return self._request(
+            "POST", f"/v1/tiered/summarize/{session_id}"
+        )
+
+    # ==================================================================
     # SHARED MEMORY (public namespaces)
     # ==================================================================
 
