@@ -946,3 +946,139 @@ class MoltGrid:
         return self._request(
             "POST", f"/v1/testing/scenarios/{scenario_id}/run"
         )
+
+    # ==================================================================
+    # ORGANIZATIONS
+    # ==================================================================
+
+    def org_create(
+        self,
+        name: str,
+        slug: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """Create an organization.  POST /v1/orgs
+
+        Parameters
+        ----------
+        name : str
+            Display name for the organization (2-64 characters).
+        slug : str, optional
+            URL-friendly slug (lowercase alphanumeric and hyphens only).
+        """
+        body: Dict[str, Any] = {"name": name}
+        if slug is not None:
+            body["slug"] = slug
+        return self._request("POST", "/v1/orgs", json=body)
+
+    def org_list(self) -> Dict[str, Any]:
+        """List organizations the authenticated user belongs to.  GET /v1/orgs"""
+        return self._request("GET", "/v1/orgs")
+
+    def org_get(self, org_id: str) -> Dict[str, Any]:
+        """Get organization details including members.  GET /v1/orgs/{org_id}"""
+        return self._request("GET", f"/v1/orgs/{org_id}")
+
+    def org_add_member(
+        self,
+        org_id: str,
+        user_id: str,
+        role: str = "member",
+    ) -> Dict[str, Any]:
+        """Invite a user to an organization.  POST /v1/orgs/{org_id}/members
+
+        Parameters
+        ----------
+        org_id : str
+            Organization to add the member to.
+        user_id : str
+            User ID of the person to invite.
+        role : str
+            Role to assign: ``"owner"``, ``"admin"``, or ``"member"`` (default).
+        """
+        return self._request(
+            "POST",
+            f"/v1/orgs/{org_id}/members",
+            json={"user_id": user_id, "role": role},
+        )
+
+    def org_list_members(self, org_id: str) -> Dict[str, Any]:
+        """List members of an organization.  GET /v1/orgs/{org_id}/members"""
+        return self._request("GET", f"/v1/orgs/{org_id}/members")
+
+    def org_remove_member(self, org_id: str, user_id: str) -> Dict[str, Any]:
+        """Remove a member from an organization.  DELETE /v1/orgs/{org_id}/members/{user_id}"""
+        return self._request("DELETE", f"/v1/orgs/{org_id}/members/{user_id}")
+
+    def org_change_role(
+        self,
+        org_id: str,
+        user_id: str,
+        role: str,
+    ) -> Dict[str, Any]:
+        """Change a member's role in an organization.  PATCH /v1/orgs/{org_id}/members/{user_id}
+
+        Parameters
+        ----------
+        org_id : str
+            Organization ID.
+        user_id : str
+            Target member's user ID.
+        role : str
+            New role: ``"owner"``, ``"admin"``, or ``"member"``.
+        """
+        return self._request(
+            "PATCH",
+            f"/v1/orgs/{org_id}/members/{user_id}",
+            json={"role": role},
+        )
+
+    def org_switch(self, org_id: str) -> Dict[str, Any]:
+        """Switch the active organization context.  POST /v1/orgs/{org_id}/switch"""
+        return self._request("POST", f"/v1/orgs/{org_id}/switch")
+
+    # ==================================================================
+    # INTEGRATIONS
+    # ==================================================================
+
+    def integration_register(
+        self,
+        agent_id: str,
+        platform: str,
+        config: Optional[Dict[str, Any]] = None,
+        status: str = "active",
+    ) -> Dict[str, Any]:
+        """Link an external platform to an agent.  POST /v1/agents/{agent_id}/integrations
+
+        Parameters
+        ----------
+        agent_id : str
+            The agent to attach the integration to (must be your own).
+        platform : str
+            Platform name, e.g. ``"moltbook"``, ``"slack"``.
+        config : dict, optional
+            Platform-specific configuration.
+        status : str
+            Initial status (default ``"active"``).
+        """
+        body: Dict[str, Any] = {"platform": platform, "status": status}
+        if config is not None:
+            body["config"] = config
+        return self._request(
+            "POST", f"/v1/agents/{agent_id}/integrations", json=body
+        )
+
+    def integration_list(self, agent_id: str) -> Dict[str, Any]:
+        """List integrations for an agent.  GET /v1/agents/{agent_id}/integrations"""
+        return self._request("GET", f"/v1/agents/{agent_id}/integrations")
+
+    # ==================================================================
+    # TEMPLATES
+    # ==================================================================
+
+    def template_list(self) -> Dict[str, Any]:
+        """List available agent templates.  GET /v1/templates"""
+        return self._request("GET", "/v1/templates")
+
+    def template_get(self, template_id: str) -> Dict[str, Any]:
+        """Get a specific template by ID.  GET /v1/templates/{template_id}"""
+        return self._request("GET", f"/v1/templates/{template_id}")
